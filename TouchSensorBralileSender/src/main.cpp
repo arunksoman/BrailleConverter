@@ -6,6 +6,7 @@
 uint8_t broadcastAddress[] = {0x24, 0x6F, 0x28, 0xB4, 0xA4, 0x70};
 typedef struct struct_message {
   String data;
+  bool touchStatus;
 } struct_message;
 
 // Create a struct_message called myData
@@ -25,7 +26,8 @@ int reading1, reading2, reading3, reading4;
 // Timer: Auxiliary variables
 unsigned long now = millis();
 unsigned long lastTrigger = 0;
-static volatile bool startTimer = false;
+bool startTimer;
+
 //static volatile bool limit_consecutive_trigger = false;
 
 // callback when data is sent
@@ -74,6 +76,16 @@ void IRAM_ATTR detect_touch() {
   touch_count1 = 0;
   touch_count2 = 0;
   touch_count3 = 0;
+  myData.touchStatus = true;
+  Serial.print("touchStatus: ");
+  Serial.println(myData.touchStatus);
+  esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &myData, sizeof(myData));  
+  if (result == ESP_OK) {
+    Serial.println("Sent with success");
+  }
+  else {
+    Serial.println("Error sending the data");
+  }
   //limit_consecutive_trigger = true;
 }
 
@@ -85,6 +97,7 @@ void loop() {
   // Current time
   now = millis();
   if(startTimer && (now - lastTrigger < (timeSeconds*1000))){
+    myData.touchStatus = false;
     reading1 = touchRead(touch_pin_13);
     reading2 = touchRead(touch_pin_12);
     reading3 = touchRead(touch_pin_14);
@@ -132,16 +145,21 @@ void loop() {
 
   // Turn off the LED after the number of seconds defined in the timeSeconds variable
   if(startTimer && (now - lastTrigger > (timeSeconds*1000))) {
+    Serial.println("Iam here here hre here here here here here");
     Serial.println("Touch stopped...");
     startTimer = false;
-    esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &myData, sizeof(myData));
+    myData.touchStatus = false;
+    Serial.print("touchStatus: ");
+    Serial.println(myData.touchStatus);
+    
+    esp_err_t result1 = esp_now_send(broadcastAddress, (uint8_t *) &myData, sizeof(myData));
    
-  if (result == ESP_OK) {
-    Serial.println("Sent with success");
-  }
-  else {
-    Serial.println("Error sending the data");
-  }
+    if (result1 == ESP_OK) {
+      Serial.println("Sent with success");
+    }
+    else {
+      Serial.println("Error sending the data");
+    }
     //limit_consecutive_trigger = false;
   }
 

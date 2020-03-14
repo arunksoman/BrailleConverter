@@ -6,6 +6,7 @@
 // Must match the sender structure
 typedef struct struct_message {
   String data;
+  bool touchStatus;
 } struct_message;
 
 // Create a struct_message called myData
@@ -14,8 +15,8 @@ struct_message myData;
 // callback function that will be executed when data is received
 void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
   memcpy(&myData, incomingData, sizeof(myData));
-  Serial.print("String: ");
-  Serial.println(myData.data);
+  Serial.print("touchStatus: ");
+  Serial.println(myData.touchStatus);
 }
  
 void setup() {
@@ -30,7 +31,6 @@ void setup() {
     Serial.println("Error initializing ESP-NOW");
     return;
   }
-  
   // Once ESPNow is successfully Init, we will register for recv CB to
   // get recv packer info
   esp_now_register_recv_cb(OnDataRecv);
@@ -39,4 +39,11 @@ void setup() {
 void loop() {
     // Serial.print("String Accessed on main loop: ");
     // Serial.println(myData.data);
+    // if(myData.touchStatus){
+    //   Serial.println("Touch start activated");
+    // }
+    // if(!myData.touchStatus){
+    //     Serial.println("Touch start deactivated...");
+    // }
+    // delay(1000);
 }
