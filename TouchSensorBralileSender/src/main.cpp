@@ -12,7 +12,7 @@ typedef struct struct_message {
 // Create a struct_message called myData
 struct_message myData;
 static volatile uint64_t timeSeconds = 4;
-String letter;
+String Alphabet_code;
 
 const int touch_pin_13 = 13;
 const int touch_pin_12 = 12;
@@ -136,11 +136,11 @@ void loop() {
     else{
       finger3 = "0";
     }
-    letter = finger1 + finger2 + finger3;
-    myData.data = letter;
+    Alphabet_code = finger1 + finger2 + finger3;
+    myData.data = Alphabet_code;
   }
-  Serial.print("Letter is: ");
-  Serial.println(letter);
+  Serial.print("code is: ");
+  Serial.println(Alphabet_code);
 
 
   // Turn off the LED after the number of seconds defined in the timeSeconds variable
